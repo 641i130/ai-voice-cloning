@@ -6,16 +6,16 @@ That being said, some enhancements added compared to the original repo:
 
 :heavy_check_mark: Possible to train in other languages
 
-:heavy_check_mark: Hifigan added, allowing for faster inference at the cost of quality.  
+:heavy_check_mark: Hifigan added, allowing for faster inference at the cost of quality.
 
 :heavy_check_mark: whisper-v3 added as a chooseable option for whisperx
 
-:heavy_check_mark: Output conversion using RVC 
+:heavy_check_mark: Output conversion using RVC
 
-This is a fork of the repo originally located here: https://git.ecker.tech/mrq/ai-voice-cloning.  All of the work that was put into it to incoporate training with DLAS and inference with Tortoise belong to mrq, the author of the original ai-voice-cloning repo.  
+This is a fork of the repo originally located here: https://git.ecker.tech/mrq/ai-voice-cloning.  All of the work that was put into it to incoporate training with DLAS and inference with Tortoise belong to mrq, the author of the original ai-voice-cloning repo.
 
 ## Setup
-This repo works on **Windows with NVIDIA GPUs** and **Linux running Docker with NVIDIA GPUs**. 
+This repo works on **Windows with NVIDIA GPUs** and **Linux running Docker with NVIDIA GPUs**.
 
 ### Windows Package (Recommended)
 1. Optional, but recommended: Install 7zip on your computer: https://www.7-zip.org/
@@ -56,7 +56,7 @@ git clone https://github.com/JarodMica/ai-voice-cloning.git
     - Run the docker configuration command
 
         ```sudo nvidia-ctk runtime configure --runtime=docker```
-    
+
     - Restart docker
 
 
@@ -101,7 +101,7 @@ Watch Second (RVC update): https://www.youtube.com/watch?v=7tpWH8_S8es&t=504s
 
 Everything is pretty much the same as before if you've used this repository in the past, however, there is a new option to convert text output using ```rvc```.  Before you can use it, you will need a **trained** RVC .pth file that you get from RVC or online, and then you will need to place it in ```models/rvc_models/```.  Both .index and .pth files can be placed in here and they'll show up correctly in their respective dropdown menus.
 
-To enable rvc: 
+To enable rvc:
 1. Check and enable ```Show Experimental Settings``` to reveal more options
 2. Check and enable ```Run the outputter audio through RVC```.
 You will now have access to parameters you could adjust in RVC for the RVC voice model you're using.
@@ -128,6 +128,14 @@ You should be able to navigate into the folder and then pull the repo to update 
 cd ai-voice-cloning
 git pull
 ./setup-docker.sh
+```
+
+### Linux via conda
+```
+conda create -n tortoise python=3.11
+./setup-cuda.sh
+./setup-whisperx.sh
+./start.sh
 ```
 
 ## Documentation

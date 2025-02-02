@@ -89,7 +89,7 @@ except Exception as e:
 try:
 	from whisper.normalizers.english import EnglishTextNormalizer
 	from whisper.normalizers.basic import BasicTextNormalizer
-	from whisper.tokenizer import LANGUAGES 
+	from whisper.tokenizer import LANGUAGES
 
 	print("Whisper detected")
 except Exception as e:
@@ -172,7 +172,7 @@ if BARK_ENABLED:
 				text_use_small=small,
 				coarse_use_small=small,
 				fine_use_small=small,
-				
+
 				force_reload=False
 			)
 
@@ -208,7 +208,7 @@ if BARK_ENABLED:
 			transcription_json = f'./training/{voice}/whisper.json'
 			if not os.path.exists(transcription_json):
 				raise f"Transcription for voice not found: {voice}"
-			
+
 			transcriptions = json.load(open(transcription_json, 'r', encoding="utf-8"))
 			candidates = []
 			for file in transcriptions:
@@ -261,7 +261,7 @@ if BARK_ENABLED:
 			if self.hubert_enabled:
 				from hubert.pre_kmeans_hubert import CustomHubert
 				from hubert.customtokenizer import CustomTokenizer
-				
+
 				wav = wav.to(self.device)
 
 				# Extract discrete codes from EnCodec
@@ -435,9 +435,9 @@ def generate_bark(**kwargs):
 		texts = parameters['text'].split(parameters['delimiter'])
 	else:
 		texts = split_and_recombine_text(parameters['text'])
- 
+
 	full_start_time = time.time()
- 
+
 	outdir = f"{args.results_folder}/{voice}/"
 	os.makedirs(outdir, exist_ok=True)
 
@@ -493,13 +493,13 @@ def generate_bark(**kwargs):
 		return info
 
 	INFERENCING = True
-	for line, cut_text in enumerate(texts):	
+	for line, cut_text in enumerate(texts):
 		tqdm_prefix = f'[{str(line+1)}/{str(len(texts))}]'
 		print(f"{tqdm_prefix} Generating line: {cut_text}")
 		start_time = time.time()
 
 		# do setting editing
-		match = re.findall(r'^(\{.+\}) (.+?)$', cut_text) 
+		match = re.findall(r'^(\{.+\}) (.+?)$', cut_text)
 		override = None
 		if match and len(match) > 0:
 			match = match[0]
@@ -561,7 +561,7 @@ def generate_bark(**kwargs):
 				name = get_name(line=line, candidate=candidate)
 				audio = audio_cache[name]['audio']
 				audio_clips.append(audio)
-			
+
 			name = get_name(candidate=candidate, combined=True)
 			audio = torch.cat(audio_clips, dim=-1)
 			torchaudio.save(f'{outdir}/{cleanup_voice_name(voice)}_{name}.wav', audio, args.output_sample_rate)
@@ -601,13 +601,13 @@ def generate_bark(**kwargs):
 					cuda=get_device_name() == "cuda" and args.voice_fixer_use_cuda,
 					#mode=mode,
 				)
-				
+
 				fixed_cache[f'{name}_fixed'] = {
 					'settings': audio_cache[name]['settings'],
 					'output': True
 				}
 				audio_cache[name]['output'] = False
-			
+
 			for name in fixed_cache:
 				audio_cache[name] = fixed_cache[name]
 		except Exception as e:
@@ -635,7 +635,7 @@ def generate_bark(**kwargs):
 			metadata = music_tag.load_file(f"{outdir}/{cleanup_voice_name(voice)}_{name}.wav")
 			metadata['lyrics'] = json.dumps(audio_cache[name]['settings'])
 			metadata.save()
- 
+
 	if sample_voice is not None:
 		sample_voice = (tts.input_sample_rate, sample_voice.numpy())
 
@@ -746,9 +746,9 @@ def generate_valle(**kwargs):
 		texts = parameters['text'].split(parameters['delimiter'])
 	else:
 		texts = split_and_recombine_text(parameters['text'])
- 
+
 	full_start_time = time.time()
- 
+
 	outdir = f"{args.results_folder}/{voice}/"
 	os.makedirs(outdir, exist_ok=True)
 
@@ -804,13 +804,13 @@ def generate_valle(**kwargs):
 		return info
 
 	INFERENCING = True
-	for line, cut_text in enumerate(texts):	
+	for line, cut_text in enumerate(texts):
 		tqdm_prefix = f'[{str(line+1)}/{str(len(texts))}]'
 		print(f"{tqdm_prefix} Generating line: {cut_text}")
 		start_time = time.time()
 
 		# do setting editing
-		match = re.findall(r'^(\{.+\}) (.+?)$', cut_text) 
+		match = re.findall(r'^(\{.+\}) (.+?)$', cut_text)
 		override = None
 		if match and len(match) > 0:
 			match = match[0]
@@ -875,7 +875,7 @@ def generate_valle(**kwargs):
 				name = get_name(line=line, candidate=candidate)
 				audio = audio_cache[name]['audio']
 				audio_clips.append(audio)
-			
+
 			name = get_name(candidate=candidate, combined=True)
 			audio = torch.cat(audio_clips, dim=-1)
 			torchaudio.save(f'{outdir}/{cleanup_voice_name(voice)}_{name}.wav', audio, args.output_sample_rate)
@@ -911,13 +911,13 @@ def generate_valle(**kwargs):
 					cuda=get_device_name() == "cuda" and args.voice_fixer_use_cuda,
 					#mode=mode,
 				)
-				
+
 				fixed_cache[f'{name}_fixed'] = {
 					'settings': audio_cache[name]['settings'],
 					'output': True
 				}
 				audio_cache[name]['output'] = False
-			
+
 			for name in fixed_cache:
 				audio_cache[name] = fixed_cache[name]
 		except Exception as e:
@@ -945,7 +945,7 @@ def generate_valle(**kwargs):
 			metadata = music_tag.load_file(f"{outdir}/{cleanup_voice_name(voice)}_{name}.wav")
 			metadata['lyrics'] = json.dumps(audio_cache[name]['settings'])
 			metadata.save()
- 
+
 	if sample_voice is not None:
 		sample_voice = (tts.input_sample_rate, sample_voice.numpy())
 
@@ -1020,11 +1020,11 @@ def generate_tortoise(**kwargs):
 				notify_progress(f"Loading voice: {voice}", progress=progress)
 
 			voice_samples, conditioning_latents = load_voice(voice, model_hash=tts.autoregressive_model_hash)
-			
+
 		if voice_samples and len(voice_samples) > 0:
 			if conditioning_latents is None:
 				conditioning_latents = compute_latents(voice=voice, voice_samples=voice_samples, voice_latents_chunks=parameters['voice_latents_chunks'])
-				
+
 			sample_voice = torch.cat(voice_samples, dim=-1).squeeze().cpu()
 			voice_samples = None
 
@@ -1056,7 +1056,7 @@ def generate_tortoise(**kwargs):
 			'half_p': "Half Precision" in parameters['experimentals'],
 			'cond_free': "Conditioning-Free" in parameters['experimentals'],
 			'cvvp_amount': parameters['cvvp_weight'],
-			
+
 			'autoregressive_model': args.autoregressive_model,
 			'diffusion_model': args.diffusion_model,
 			'tokenizer_json': args.tokenizer_json,
@@ -1083,7 +1083,7 @@ def generate_tortoise(**kwargs):
 				if settings['diffusion_model'] == "auto":
 					settings['diffusion_model'] = deduce_diffusion_model(selected_voice)
 				tts.load_diffusion_model(settings['diffusion_model'])
-		
+
 		if settings['tokenizer_json'] is not None:
 			tts.load_tokenizer_json(settings['tokenizer_json'])
 
@@ -1100,7 +1100,7 @@ def generate_tortoise(**kwargs):
 		if settings['conditioning_latents'] is not None and len(settings['conditioning_latents']) == 2 and settings['cvvp_amount'] > 0:
 			print("Requesting weighing against CVVP weight, but voice latents are missing some extra data. Please regenerate your voice latents with 'Slimmer voice latents' unchecked.")
 			settings['cvvp_amount'] = 0
-			
+
 		return settings
 
 	if not parameters['delimiter']:
@@ -1112,9 +1112,9 @@ def generate_tortoise(**kwargs):
 		texts = parameters['text'].split(parameters['delimiter'])
 	else:
 		texts = split_and_recombine_text(parameters['text'])
- 
+
 	full_start_time = time.time()
- 
+
 	outdir = f"{args.results_folder}/{voice}/"
 	os.makedirs(outdir, exist_ok=True)
 
@@ -1158,7 +1158,7 @@ def generate_tortoise(**kwargs):
 		info['datetime'] = datetime.now().isoformat()
 
 		info['model'] = tts.autoregressive_model_path
-		info['model_hash'] = tts.autoregressive_model_hash 
+		info['model_hash'] = tts.autoregressive_model_hash
 
 		info['progress'] = None
 		del info['progress']
@@ -1191,7 +1191,7 @@ def generate_tortoise(**kwargs):
 					if latents and settings is not None and torch.any(settings['conditioning_latents']):
 						os.makedirs(dir, exist_ok=True)
 						torch.save(conditioning_latents, latents_path)
-				else: 
+				else:
 					if latents and settings is not None and settings['conditioning_latents']:
 						os.makedirs(dir, exist_ok=True)
 						torch.save(conditioning_latents, latents_path)
@@ -1215,13 +1215,13 @@ def generate_tortoise(**kwargs):
 				cut_text = f"[{parameters['prompt']},] {cut_text}"
 		elif parameters['emotion'] != "None" and parameters['emotion']:
 			cut_text = f"[I am really {parameters['emotion'].lower()},] {cut_text}"
-		
+
 		tqdm_prefix = f'[{str(line+1)}/{str(len(texts))}]'
 		print(f"{tqdm_prefix} Generating line: {cut_text}")
 		start_time = time.time()
 
 		# do setting editing
-		match = re.findall(r'^(\{.+\}) (.+?)$', cut_text) 
+		match = re.findall(r'^(\{.+\}) (.+?)$', cut_text)
 		override = None
 		if match and len(match) > 0:
 			match = match[0]
@@ -1241,7 +1241,7 @@ def generate_tortoise(**kwargs):
 							'return_deterministic_state', 'diffusion_sampler', 'breathing_room', 'half_p', 'cond_free',
 							'autoregressive_model', 'diffusion_model', 'tokenizer_json']
 				filtered_settings = {k: v for k, v in settings.items() if k not in unused_args}
-				
+
 				gen = tts.tts(cut_text, **filtered_settings)
 			else:
 				gen, additionals = tts.tts(cut_text, **settings )
@@ -1296,7 +1296,7 @@ def generate_tortoise(**kwargs):
 				name = get_name(line=line, candidate=candidate)
 				audio = audio_cache[name]['audio']
 				audio_clips.append(audio)
-			
+
 			name = get_name(candidate=candidate, combined=True)
 			audio = torch.cat(audio_clips, dim=-1)
 			torchaudio.save(f'{outdir}/{cleanup_voice_name(voice)}_{name}.wav', audio, args.output_sample_rate)
@@ -1332,13 +1332,13 @@ def generate_tortoise(**kwargs):
 					cuda=get_device_name() == "cuda" and args.voice_fixer_use_cuda,
 					#mode=mode,
 				)
-				
+
 				fixed_cache[f'{name}_fixed'] = {
 					'settings': audio_cache[name]['settings'],
 					'output': True
 				}
 				audio_cache[name]['output'] = False
-			
+
 			for name in fixed_cache:
 				audio_cache[name] = fixed_cache[name]
 		except Exception as e:
@@ -1366,7 +1366,7 @@ def generate_tortoise(**kwargs):
 			metadata = music_tag.load_file(f"{outdir}/{cleanup_voice_name(voice)}_{name}.wav")
 			metadata['lyrics'] = json.dumps(audio_cache[name]['settings'])
 			metadata.save()
- 
+
 	if sample_voice is not None:
 		sample_voice = (tts.input_sample_rate, sample_voice.numpy())
 
@@ -1380,7 +1380,7 @@ def generate_tortoise(**kwargs):
 		print (rvc_model_path)
 
 		for i, output_voice in enumerate(output_voices):
-			rvc_out_path = rvc_convert(model_path=rvc_model_path, 
+			rvc_out_path = rvc_convert(model_path=rvc_model_path,
 										input_path=output_voice,
 										f0_up_key=rvc_settings['f0_up_key'],
 										file_index=rvc_index_path,
@@ -1389,7 +1389,7 @@ def generate_tortoise(**kwargs):
 										resample_sr=rvc_settings['resample_sr'],
 										rms_mix_rate=rvc_settings['rms_mix_rate'],
 										protect=rvc_settings['protect'])
-			
+
 			# Read the contents from rvc_out_path
 			with open(rvc_out_path, 'rb') as file:
 				content = file.read()
@@ -1422,7 +1422,7 @@ def generate_tortoise(**kwargs):
 def cancel_generate():
 	if not INFERENCING:
 		return
-		
+
 	import tortoise.api
 
 	tortoise.api.STOP_SIGNAL = True
@@ -1464,7 +1464,7 @@ def update_baseline_for_latents_chunks( voice ):
 		return 0 # 0 will leverage using the LJspeech dataset for computing latents
 
 	files = os.listdir(path)
-	
+
 	total = 0
 	total_duration = 0
 
@@ -1486,7 +1486,7 @@ def update_baseline_for_latents_chunks( voice ):
 def compute_latents(voice=None, voice_samples=None, voice_latents_chunks=0, original_ar=False, original_diffusion=False):
 	global tts
 	global args
-	
+
 	unload_whisper()
 	unload_voicefixer()
 
@@ -1522,7 +1522,7 @@ def compute_latents(voice=None, voice_samples=None, voice_latents_chunks=0, orig
 				max_length = 0
 				for line in lines:
 					filename = f'./training/{voice}/{line.split("|")[0]}'
-					
+
 					waveform = load_audio(filename, 22050)
 					max_length = max(max_length, waveform.shape[-1])
 					voice_samples.append(waveform)
@@ -1544,7 +1544,7 @@ def compute_latents(voice=None, voice_samples=None, voice_latents_chunks=0, orig
 
 	if len(conditioning_latents) == 4:
 		conditioning_latents = (conditioning_latents[0], conditioning_latents[1], conditioning_latents[2], None)
-	
+
 	outfile = f'{get_voice_dir()}/{voice}/cond_latents_{tts.autoregressive_model_hash[:8]}.pth'
 	torch.save(conditioning_latents, outfile)
 	print(f'Saved voice latents: {outfile}')
@@ -1555,7 +1555,7 @@ def compute_latents(voice=None, voice_samples=None, voice_latents_chunks=0, orig
 class TrainingState():
 	def __init__(self, config_path, keep_x_past_checkpoints=0, start=True):
 		self.killed = False
-		
+
 		self.training_dir = os.path.dirname(config_path)
 		with open(config_path, 'r') as file:
 			self.yaml_config = yaml.safe_load(file)
@@ -1584,11 +1584,11 @@ class TrainingState():
 		self.open_state = False
 		self.training_started = False
 
-		self.info = {}		
-		
+		self.info = {}
+
 		self.it_rate = ""
 		self.it_rates = 0
-		
+
 		self.epoch_rate = ""
 
 		self.eta = "?"
@@ -1725,7 +1725,7 @@ class TrainingState():
 					continue
 
 				self.statistics['loss'].append({'epoch': epoch, 'it': self.it, 'value': self.info[k], 'type': k})
-			
+
 			for k in keys['losses']:
 				if k not in self.info:
 					continue
@@ -1781,7 +1781,7 @@ class TrainingState():
 
 				if dstep == 0:
 					continue
-		
+
 				inst_deriv = dloss / dstep
 				deriv += inst_deriv
 
@@ -1797,7 +1797,7 @@ class TrainingState():
 						break
 
 				print(f"Loss value: {loss_value} | Next milestone: {next_milestone} | Distance: {loss_value - next_milestone}")
-						
+
 				if next_milestone:
 					# tfw can do simple calculus but not basic algebra in my head
 					est_its = (next_milestone - loss_value) / deriv * 100
@@ -1851,14 +1851,14 @@ class TrainingState():
 				line = line.strip()
 				if not line:
 					continue
-					
+
 				if line[-1] == ".":
 					line = line[:-1]
 
 				if line.find('Training Metrics:') >= 0:
 					split = line.split("Training Metrics:")[-1]
 					data = json.loads(split)
-					
+
 					name = "train"
 					mode = "training"
 					prev_state = 0
@@ -1883,10 +1883,10 @@ class TrainingState():
 
 				if "it" not in data:
 					continue
-				
+
 				it = data['it']
 				epoch = data['epoch']
-				
+
 				if args.tts_backend == "vall-e":
 					if not averager or averager['key'] != f'{it}_{name}' or averager['mode'] != mode:
 						averager = {
@@ -1914,7 +1914,7 @@ class TrainingState():
 
 				if update and it <= self.last_info_check_at:
 					continue
-		
+
 		blacklist = [ "batch", "eval" ]
 		for it in unq:
 			if args.tts_backend == "vall-e":
@@ -1940,7 +1940,7 @@ class TrainingState():
 
 		if not os.path.isdir(f'{self.training_dir}/finetune/'):
 			return
-			
+
 		models = sorted([ int(d[:-8]) for d in os.listdir(f'{self.training_dir}/finetune/models/') if d[-8:] == "_gpt.pth" ])
 		states = sorted([ int(d[:-6]) for d in os.listdir(f'{self.training_dir}/finetune/training_state/') if d[-6:] == ".state" ])
 		remove_models = models[:-keep]
@@ -2006,10 +2006,10 @@ class TrainingState():
 		if data is not None:
 			if ': nan' in line and not self.nan_detected:
 				self.nan_detected = self.it
-			
+
 			self.parse_metrics( data )
 			message = self.get_status()
-			
+
 			if message:
 				percent = self.it / float(self.its) # self.epoch / float(self.epochs)
 				if progress is not None:
@@ -2022,7 +2022,7 @@ class TrainingState():
 			should_return = True
 
 		self.buffer = self.buffer[-buffer_size:]
-		
+
 		result = None
 		if should_return:
 			result = "".join(self.buffer) if not self.training_started else message
@@ -2049,7 +2049,7 @@ def run_training(config_path, verbose=False, keep_x_past_checkpoints=0, progress
 	# ensure we have the dvae.pth
 	if args.tts_backend == "tortoise":
 		get_model_path('dvae.pth')
-	
+
 	# I don't know if this is still necessary, as it was bitching at me for not doing this, despite it being in a separate process
 	torch.multiprocessing.freeze_support()
 
@@ -2090,7 +2090,7 @@ def update_training_dataplot(x_min=None, x_max=None, y_min=None, y_max=None, con
 			training_state = TrainingState(config_path=config_path, start=False)
 			training_state.load_statistics()
 			message = training_state.get_status()
-	
+
 	if training_state:
 		if not x_lim[-1]:
 			x_lim[-1] = training_state.epochs
@@ -2122,7 +2122,7 @@ def update_training_dataplot(x_min=None, x_max=None, y_min=None, y_max=None, con
 				title="Gradient Normals", color="type", tooltip=['epoch', 'it', 'value', 'type'],
 				width=500, height=350
 			)
-	
+
 	if config_path:
 		del training_state
 		training_state = None
@@ -2262,7 +2262,7 @@ def whisper_transcribe( file, language=None ):
 		else:
 			chunk_size = 30
 		result = whisper_model.transcribe(file, batch_size=args.whisper_batchsize, language=language, chunk_size=chunk_size)
-			
+
 		align_model, metadata = whisper_align_model
 		result_aligned = whisperx.align(result["segments"], align_model, metadata, file, device, return_char_alignments=False)
 
@@ -2281,7 +2281,7 @@ def validate_waveform( waveform, sample_rate, min_only=False ):
 
 	num_channels, num_frames = waveform.shape
 	duration = num_frames / sample_rate
-	
+
 	if duration < MIN_TRAINING_DURATION:
 		return "Duration too short ({:.3f}s < {:.3f}s)".format(duration, MIN_TRAINING_DURATION)
 
@@ -2305,9 +2305,9 @@ def transcribe_dataset( voice, language=None, skip_existings=False, progress=Non
 	infile = f'{indir}/whisper.json'
 
 	quantize_in_memory = args.tts_backend == "vall-e"
-	
+
 	os.makedirs(f'{indir}/audio/', exist_ok=True)
-	
+
 	TARGET_SAMPLE_RATE = 22050
 	if args.tts_backend != "tortoise":
 		TARGET_SAMPLE_RATE = 24000
@@ -2339,7 +2339,7 @@ def transcribe_dataset( voice, language=None, skip_existings=False, progress=Non
 			waveform, sample_rate = resample(waveform, sample_rate, TARGET_SAMPLE_RATE)
 			if waveform.shape[0] == 2:
 				waveform = waveform[:1]
-			
+
 			try:
 				kwargs = {}
 				if basename[-4:] == ".wav":
@@ -2432,28 +2432,28 @@ def slice_dataset( voice, trim_silence=True, start_offset=0, end_offset=0, resul
 		num_channels, num_frames = waveform.shape
 		duration = num_frames / sample_rate
 
-		for segment in result['segments']: 
+		for segment in result['segments']:
 			file = filename.replace(f".{extension}", f"_{pad(segment['id'], 4)}.{out_extension}")
-			
+
 			sliced, error = slice_waveform( waveform, sample_rate, segment['start'] + start_offset, segment['end'] + end_offset, trim_silence )
 			if error:
 				message = f"{error}, skipping... {file}"
 				print(message)
 				messages.append(message)
 				continue
-		
+
 			sliced, _ = resample( sliced, sample_rate, TARGET_SAMPLE_RATE )
 
 			if waveform.shape[0] == 2:
 				waveform = waveform[:1]
-				
+
 			kwargs = {}
 			if file[-4:] == ".wav":
 				kwargs['encoding'] = "PCM_S"
 				kwargs['bits_per_sample'] = 16
 
 			torchaudio.save(f"{indir}/audio/{file}", sliced, TARGET_SAMPLE_RATE, **kwargs)
-			
+
 			segments +=1
 
 	messages.append(f"Sliced segments: {files} => {segments}.")
@@ -2474,7 +2474,7 @@ def phonemize_txt_file( path ):
 			phonemes = phonemizer( text )
 			reparsed.append(f'{audio}|{phonemes}')
 			f.write(f'\n{audio}|{phonemes}')
-	
+
 
 	joined = "\n".join(reparsed)
 	with open(path.replace(".txt", ".phn.txt"), 'w', encoding='utf-8') as f:
@@ -2530,7 +2530,7 @@ def phonemizer( text, language="en-us" ):
 			phonemizer = BACKENDS[backend]( language, preserve_punctuation=True, with_stress=True)
 		elif backend == 'espeak-mbrola':
 			phonemizer = BACKENDS[backend]( language )
-		else: 
+		else:
 			phonemizer = BACKENDS[backend]( language, preserve_punctuation=True )
 
 		cached_backends[key] = phonemizer
@@ -2550,7 +2550,7 @@ def phonemizer( text, language="en-us" ):
 def should_phonemize():
 	if args.tts_backend == "vall-e":
 		return False
-		
+
 	should = args.tokenizer_json is not None and args.tokenizer_json[-8:] == "ipa.json"
 	if should:
 		try:
@@ -2649,9 +2649,9 @@ def prepare_dataset( voice, use_segments=False, text_length=0, audio_length=0, p
 				message = slice_dataset( voice, results=tmp )
 				print(message)
 				messages = messages + message.split("\n")
-		
+
 		waveform = None
-		
+
 
 		if quantize_in_memory:
 			path = f'{indir}/audio/{filename}'
@@ -2722,7 +2722,7 @@ def prepare_dataset( voice, use_segments=False, text_length=0, audio_length=0, p
 		phonemes = result['phonemes']
 		if phonemize and phonemes is None:
 			phonemes = phonemizer( text, language=lang )
-		
+
 		normalized = normalizer(text) if normalize else text
 
 		if len(text) > MAX_TRAINING_CHAR_LENGTH:
@@ -2742,11 +2742,11 @@ def prepare_dataset( voice, use_segments=False, text_length=0, audio_length=0, p
 
 		line = f'audio/{file}|{phonemes if phonemize and phonemes else text}'
 
-		lines['training' if not culled else 'validation'].append(line) 
+		lines['training' if not culled else 'validation'].append(line)
 
 		if culled or args.tts_backend != "vall-e":
 			continue
-		
+
 		os.makedirs(f'{indir}/valle/', exist_ok=True)
 		#os.makedirs(f'./training/valle/data/{voice}/', exist_ok=True)
 
@@ -2856,7 +2856,7 @@ def optimize_training_settings( **kwargs ):
 
 	if settings['batch_size'] > lines:
 		settings['batch_size'] = lines
-		messages.append(f"Batch size is larger than your dataset, clamping batch size to: {settings['batch_size']}")	
+		messages.append(f"Batch size is larger than your dataset, clamping batch size to: {settings['batch_size']}")
 
 	"""
 	if lines % settings['batch_size'] != 0:
@@ -2867,7 +2867,7 @@ def optimize_training_settings( **kwargs ):
 	"""
 	if settings['gradient_accumulation_size'] == 0:
 		settings['gradient_accumulation_size'] = 1
-	
+
 	if settings['batch_size'] / settings['gradient_accumulation_size'] < 2:
 		settings['gradient_accumulation_size'] = int(settings['batch_size'] / 2)
 		if settings['gradient_accumulation_size'] == 0:
@@ -2943,7 +2943,7 @@ def optimize_training_settings( **kwargs ):
 		else:
 			messages.append("! EXPERIMENTAL ! Half Precision requested.")
 			if not os.path.exists(get_halfp_model_path()):
-				convert_to_halfp()	
+				convert_to_halfp()
 
 	steps = int(iterations / settings['epochs'])
 
@@ -2955,7 +2955,7 @@ def save_training_settings( **kwargs ):
 	messages = []
 	settings = {}
 	settings.update(kwargs)
-	
+
 
 	outjson = f'./training/{settings["voice"]}/train.json'
 	with open(outjson, 'w', encoding="utf-8") as f:
@@ -2984,7 +2984,7 @@ def save_training_settings( **kwargs ):
 	settings['validation_rate'] = int(settings['validation_rate'] * iterations_per_epoch)
 
 	iterations_per_epoch = int(iterations_per_epoch)
-	
+
 	if settings['save_rate'] < 1:
 		settings['save_rate'] = 1
 	"""
@@ -3082,7 +3082,7 @@ def save_training_settings( **kwargs ):
 
 		with open(out, 'w', encoding="utf-8") as f:
 			f.write(yaml)
-	
+
 	if args.tts_backend == "tortoise":
 		use_template(f'./models/.template.dlas.yaml', f'./training/{settings["voice"]}/train.yaml')
 	elif args.tts_backend == "vall-e":
@@ -3100,7 +3100,7 @@ def import_voices(files, saveAs=None, progress=None):
 
 	for file in tqdm(files, desc="Importing voice files"):
 		j, latents = read_generate_settings(file, read_latents=True)
-		
+
 		if j is not None and saveAs is None:
 			saveAs = j['voice']
 		if saveAs is None or saveAs == "":
@@ -3152,7 +3152,7 @@ def get_voice( name, dir=get_voice_dir(), load_latents=True, extensions=["wav", 
 	if not os.path.isdir(subj):
 		return
 	files = os.listdir(subj)
-	
+
 	if load_latents:
 		extensions.append("pth")
 
@@ -3162,7 +3162,7 @@ def get_voice( name, dir=get_voice_dir(), load_latents=True, extensions=["wav", 
 		if ext not in extensions:
 			continue
 
-		voice.append(f'{subj}/{file}') 
+		voice.append(f'{subj}/{file}')
 
 	return sorted( voice )
 
@@ -3193,15 +3193,15 @@ def get_voice_list(dir=get_voice_dir(), append_defaults=False, extensions=["wav"
 				res.append(f'{name}/{subdir}')
 
 	res = sorted(res)
-	
+
 	if append_defaults:
 		res = res + defaults
-	
+
 	return res
 
 
-    
-    
+
+
 
 def get_valle_models(dir="./training/"):
 	return [ f'{dir}/{d}/config.yaml' for d in os.listdir(dir) if os.path.exists(f'{dir}/{d}/config.yaml') ]
@@ -3222,7 +3222,7 @@ def get_autoregressive_models(dir="./models/finetunes/", prefixed=False, auto=Fa
 		found = found + [ f'./training/{training}/finetune/models/{d}_gpt.pth' for d in models ]
 
 	res = base + additionals + found
-	
+
 	if prefixed:
 		for i in range(len(res)):
 			path = res[i]
@@ -3233,7 +3233,7 @@ def get_autoregressive_models(dir="./models/finetunes/", prefixed=False, auto=Fa
 
 	paths = relative_paths(res)
 	if auto:
-		paths = ["auto"] + paths 
+		paths = ["auto"] + paths
 
 	return paths
 
@@ -3302,7 +3302,7 @@ def check_for_updates( dir = None ):
 
 	with open(f'{git_dir}/FETCH_HEAD', 'r', encoding="utf-8") as f:
 		head = f.read()
-	
+
 	match = re.findall(r"^([a-f0-9]+).+?https:\/\/(.+?)\/(.+?)\/(.+?)\n", head)
 	if match is None or len(match) == 0:
 		print(f"Cannot check for updates for {dir}: cannot parse FETCH_HEAD")
@@ -3364,7 +3364,7 @@ def setup_args(cli=False):
 
 		'voice-fixer-use-cuda': True,
 
-		
+
 		'force-cpu-for-conditioning-latents': False,
 		'defer-tts-load': False,
 		'device-override': None,
@@ -3375,17 +3375,17 @@ def setup_args(cli=False):
 		'output-sample-rate': 44100,
 		'output-volume': 1,
 		'results-folder': "./results/",
-		
+
 		'hf-token': None,
 		'tts-backend': TTSES[0],
-		
+
 		'autoregressive-model': None,
 		'diffusion-model': None,
 		'vocoder-model': VOCODERS[-1],
 		'tokenizer-json': None,
 
 		'phonemizer-backend': 'espeak',
-		
+
 		'valle-model': None,
 
 		'whisper-backend': 'openai/whisper',
@@ -3433,7 +3433,7 @@ def setup_args(cli=False):
 	# parser.add_argument("--resample_sr", action='store_true', default=default_arguments['resample_sr'], help="quality at which to resample audio to, defaults to no resample")
 	# parser.add_argument("--rms_mix_rate", action='store_true', default=default_arguments['rms_mix_rate'], help="adjust the volume envelope scaling. Closer to 0, the more it mimicks the volume of the original vocals. Can help mask noise and make volume sound more natural when set relatively low. Closer to 1 will be more of a consistently loud volume")
 	# parser.add_argument("--protect", action='store_true', default=default_arguments['protect'], help="protect voiceless consonants and breath sounds to prevent artifacts such as tearing in electronic music. Set to 0.5 to disable. Decrease the value to increase protection, but it may reduce indexing accuracy")
-	
+
 
 	parser.add_argument("--force-cpu-for-conditioning-latents", default=default_arguments['force-cpu-for-conditioning-latents'], action='store_true', help="Forces computing conditional latents to be done on the CPU (if you constantyl OOM on low chunk counts)")
 	parser.add_argument("--defer-tts-load", default=default_arguments['defer-tts-load'], action='store_true', help="Defers loading TTS model")
@@ -3446,7 +3446,7 @@ def setup_args(cli=False):
 	parser.add_argument("--output-sample-rate", type=int, default=default_arguments['output-sample-rate'], help="Sample rate to resample the output to (from 24KHz)")
 	parser.add_argument("--output-volume", type=float, default=default_arguments['output-volume'], help="Adjusts volume of output")
 	parser.add_argument("--results-folder", type=str, default=default_arguments['results-folder'], help="Sets output directory")
-	
+
 	parser.add_argument("--hf-token", type=str, default=default_arguments['hf-token'], help="HuggingFace Token")
 	parser.add_argument("--tts-backend", default=default_arguments['tts-backend'], help="Specifies which TTS backend to use.")
 
@@ -3456,16 +3456,16 @@ def setup_args(cli=False):
 	parser.add_argument("--tokenizer-json", default=default_arguments['tokenizer-json'], help="Specifies which tokenizer json to use for tokenizing.")
 
 	parser.add_argument("--phonemizer-backend", default=default_arguments['phonemizer-backend'], help="Specifies which phonemizer backend to use.")
-	
+
 	parser.add_argument("--valle-model", default=default_arguments['valle-model'], help="Specifies which VALL-E model to use for sampling.")
-	
+
 	parser.add_argument("--whisper-backend", default=default_arguments['whisper-backend'], action='store_true', help="Picks which whisper backend to use (openai/whisper, lightmare/whispercpp)")
 	parser.add_argument("--whisper-model", default=default_arguments['whisper-model'], help="Specifies which whisper model to use for transcription.")
 	parser.add_argument("--whisper-batchsize", type=int, default=default_arguments['whisper-batchsize'], help="Specifies batch size for WhisperX")
-	
+
 	parser.add_argument("--training-default-halfp", action='store_true', default=default_arguments['training-default-halfp'], help="Training default: halfp")
 	parser.add_argument("--training-default-bnb", action='store_true', default=default_arguments['training-default-bnb'], help="Training default: bnb")
-	
+
 	parser.add_argument("--websocket-listen-port", type=int, default=default_arguments['websocket-listen-port'], help="Websocket server listen port, default: 8069")
 	parser.add_argument("--websocket-listen-address", default=default_arguments['websocket-listen-address'], help="Websocket server listen address, default: 127.0.0.1")
 	parser.add_argument("--websocket-enabled", action='store_true', default=default_arguments['websocket-enabled'], help="Websocket API server enabled, default: false")
@@ -3500,7 +3500,7 @@ def setup_args(cli=False):
 		args.listen_port = int(args.listen_port)
 		if args.listen_port == 0:
 			args.listen_port = None
-	
+
 	return args
 
 def get_default_settings( hypenated=True ):
@@ -3529,7 +3529,7 @@ def get_default_settings( hypenated=True ):
 		'autocalculate-voice-chunk-duration-size': args.autocalculate_voice_chunk_duration_size,
 		'output-volume': args.output_volume,
 		'results-folder': args.results_folder,
-		
+
 		'hf-token': args.hf_token,
 		'tts-backend': args.tts_backend,
 
@@ -3539,7 +3539,7 @@ def get_default_settings( hypenated=True ):
 		'tokenizer-json': args.tokenizer_json,
 
 		'phonemizer-backend': args.phonemizer_backend,
-		
+
 		'valle-model': args.valle_model,
 
 		'whisper-backend': args.whisper_backend,
@@ -3585,17 +3585,17 @@ def update_args( **kwargs ):
 	args.autocalculate_voice_chunk_duration_size = settings['autocalculate_voice_chunk_duration_size']
 	args.output_volume = settings['output_volume']
 	args.results_folder = settings['results_folder']
-	
+
 	args.hf_token = settings['hf_token']
 	args.tts_backend = settings['tts_backend']
-	
+
 	args.autoregressive_model = settings['autoregressive_model']
 	args.diffusion_model = settings['diffusion_model']
 	args.vocoder_model = settings['vocoder_model']
 	args.tokenizer_json = settings['tokenizer_json']
 
 	args.phonemizer_backend = settings['phonemizer_backend']
-	
+
 	args.valle_model = settings['valle_model']
 
 	args.whisper_backend = settings['whisper_backend']
@@ -3648,7 +3648,7 @@ def import_generate_settings(file = None):
 
 	if settings is not None:
 		res.update(settings)
-	
+
 	return res
 
 def reset_generate_settings():
@@ -3683,7 +3683,7 @@ def read_generate_settings(file, read_latents=True):
 			if read_latents:
 				latents = base64.b64decode(j['latents'])
 			del j['latents']
-		
+
 
 		if "time" in j:
 			j["time"] = "{:.3f}".format(j["time"])
@@ -3711,7 +3711,7 @@ def version_check_tts( min_version ):
 		return True
 	return False
 
-def load_tts( restart=False, 
+def load_tts( restart=False,
 	# TorToiSe configs
 	autoregressive_model=None, diffusion_model=None, vocoder_model=None, tokenizer_json=None,
 	# VALL-E configs
@@ -3751,22 +3751,22 @@ def load_tts( restart=False,
 		if get_device_name() == "cpu":
 			print("!!!! WARNING !!!! No GPU available in PyTorch. You may need to reinstall PyTorch.")
 
-		
+
 		if args.use_hifigan:
 			print("Loading Tortoise with Hifigan")
-			tts = Toroise_TTS_Hifi(autoregressive_model_path=autoregressive_model,  
-							tokenizer_json=tokenizer_json, 
+			tts = Toroise_TTS_Hifi(autoregressive_model_path=autoregressive_model,
+							tokenizer_json=tokenizer_json,
 							use_deepspeed=args.use_deepspeed)
 		else:
 			print(f"Loading TorToiSe... (AR: {autoregressive_model}, diffusion: {diffusion_model}, vocoder: {vocoder_model})")
-			tts = TorToise_TTS(minor_optimizations=not args.low_vram, 
-							autoregressive_model_path=autoregressive_model, 
-							diffusion_model_path=diffusion_model, 
-							vocoder_model=vocoder_model, 
-							tokenizer_json=tokenizer_json, 
-							unsqueeze_sample_batches=args.unsqueeze_sample_batches, 
+			tts = TorToise_TTS(minor_optimizations=not args.low_vram,
+							autoregressive_model_path=autoregressive_model,
+							diffusion_model_path=diffusion_model,
+							vocoder_model=vocoder_model,
+							tokenizer_json=tokenizer_json,
+							unsqueeze_sample_batches=args.unsqueeze_sample_batches,
 							use_deepspeed=args.use_deepspeed)
-			
+
 	elif args.tts_backend == "vall-e":
 		if valle_model:
 			args.valle_model = valle_model
@@ -3796,7 +3796,10 @@ def unload_tts():
 def reload_tts():
 	in_docker = os.environ.get("IN_DOCKER", "false")
 	if in_docker == "false":
-		subprocess.Popen(["start.bat"])
+		if os.name == 'nt':
+    		subprocess.Popen(["start.bat"])
+    	else:
+           	subprocess.Popen(["./start.sh"])
 	with open("reload_flag.txt", "w") as f:
 		f.write("reload")
 	os.kill(os.getpid(), signal.SIGTERM)  # Or signal.SIGKILL for an even harder kill
@@ -3809,10 +3812,10 @@ def get_current_voice():
 		return current_voice
 
 	settings, _ = read_generate_settings("./config/generate.json", read_latents=False)
-	
+
 	if settings and "voice" in settings['voice']:
 		return settings["voice"]
-	
+
 	return None
 
 def deduce_autoregressive_model(voice=None):
@@ -3822,7 +3825,7 @@ def deduce_autoregressive_model(voice=None):
 	if voice:
 		if os.path.exists(f'./models/finetunes/{voice}.pth'):
 			return f'./models/finetunes/{voice}.pth'
-		
+
 		dir = f'./training/{voice}/finetune/models/'
 		if os.path.isdir(dir):
 			counts = sorted([ int(d[:-8]) for d in os.listdir(dir) if d[-8:] == "_gpt.pth" ])
@@ -3859,7 +3862,7 @@ def update_autoregressive_model(autoregressive_model_path):
 		if tts_loading:
 			raise Exception("TTS is still initializing...")
 		return
-	
+
 	if hasattr(tts, "loading") and tts.loading:
 		raise Exception("TTS is still initializing...")
 
@@ -3870,7 +3873,7 @@ def update_autoregressive_model(autoregressive_model_path):
 	tts.load_autoregressive_model(autoregressive_model_path)
 
 	do_gc()
-	
+
 	return autoregressive_model_path
 
 def update_diffusion_model(diffusion_model_path):
@@ -3894,7 +3897,7 @@ def update_diffusion_model(diffusion_model_path):
 		if tts_loading:
 			raise Exception("TTS is still initializing...")
 		return
-	
+
 	if hasattr(tts, "loading") and tts.loading:
 		raise Exception("TTS is still initializing...")
 
@@ -3907,7 +3910,7 @@ def update_diffusion_model(diffusion_model_path):
 	tts.load_diffusion_model(diffusion_model_path)
 
 	do_gc()
-	
+
 	return diffusion_model_path
 
 def update_vocoder_model(vocoder_model):
@@ -3932,7 +3935,7 @@ def update_vocoder_model(vocoder_model):
 	print(f"Loaded model: {tts.vocoder_model}")
 
 	do_gc()
-	
+
 	return vocoder_model
 
 def update_tokenizer(tokenizer_json):
@@ -3957,7 +3960,7 @@ def update_tokenizer(tokenizer_json):
 	print(f"Loaded tokenizer vocab: {tts.tokenizer_json}")
 
 	do_gc()
-	
+
 	return vocoder_model
 
 def load_voicefixer(restart=False):
@@ -4042,7 +4045,7 @@ def unload_whisper():
 		whisper_model = None
 		print("Unloaded Whisper")
 
-	do_gc()	
+	do_gc()
 
 # shamelessly borrowed from Voldy's Web UI: https://github.com/AUTOMATIC1111/stable-diffusion-webui/blob/master/modules/extras.py#L74
 def merge_models( primary_model_name, secondary_model_name, alpha, progress=gr.Progress() ):
@@ -4064,7 +4067,7 @@ def merge_models( primary_model_name, secondary_model_name, alpha, progress=gr.P
 		if key in key_blacklist:
 			print("Skipping ignored key:", key)
 			continue
-		
+
 		a = theta_0[key]
 		b = theta_1[key]
 
@@ -4105,7 +4108,7 @@ def load_rvc_settings():
             return json.load(file)
     else:
         return {}  # Return an empty dict if the file doesn't exist
-    
+
 def get_training_folder(voice) -> str:
     '''
     voice(str) : voice to retrieve training folder from
@@ -4117,13 +4120,13 @@ def archive_dataset(voice):
     archive_root = os.path.join(training_folder,"archived_data")
     current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     archive_folder = os.path.join(archive_root,current_datetime)
-    
+
     items_to_move = ["train.txt", "validation.txt", "audio"]
     training_folder_contents = os.listdir(training_folder)
 
     if not any(item in training_folder_contents for item in items_to_move):
         raise gr.Error("No files to move")
-    
+
     for item in items_to_move:
         os.makedirs(archive_folder, exist_ok=True)
         move_item_path = os.path.join(training_folder, item)
@@ -4132,5 +4135,5 @@ def archive_dataset(voice):
                 shutil.move(move_item_path, archive_folder)
             except:
                 raise gr.Error(f'Close out of any windows using where "{item} is located!')
-    
+
     gr.Info('Finished archiving files to "archived_data" folder')
